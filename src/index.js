@@ -1,19 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './styles/styles.css';
+import moment from 'moment';
 
-function Tweet() {
+function Tweet({ tweet }) {
     return (
         <div className="tweet">
-            <Avatar />
+            <Avatar hash={tweet.gravatar} />
             <div className="content">
-                <Author />
-                <Time />
-                <Message />
+                <Author author={tweet.author} />
+                <Time time={tweet.timestamps}/>
+                <Message txt={tweet.message} />
                 <div className="buttons">
                     <ReplyButton />
-                    <RetweetButton />
-                    <LikeButton />
+                    <RetweetButton count={tweet.retweets} />
+                    <LikeButton count={tweet.likes} />
                     <MoreOptionsButton />
                 </div>
             </div>
@@ -21,34 +22,69 @@ function Tweet() {
     );
 }
 
-function Avatar() {
+function Avatar({ hash }) {
     return (
-        <img src="https://www.gravatar.com/avatar/nothing" className="avatar" alt="avatar" />
+        <img src={`https://www.gravatar.com/avatar/${hash}`} className="avatar" alt="avatar" />
     );
 }
 
-function Message() {
+function Message({ txt }) {
     return (
         <div className="message">
-            This is less than 140 characters 👋
+            {txt}
         </div>
     );
 }
 
-function Author() {
+function Author({ author }) {
     return (
         <span className="author">
-            <span className="name">Yunus Bahtiar</span>
-            <span className="handle">@yunnix</span>
+            <span className="name">{author.name}</span>
+            <span className="handle">@{author.handle}</span>
         </span>
     );
 }
 
-const Time = () => ( <span className="time">3h ago</span> );
-const ReplyButton = () => ( <i className="fa fa-reply reply-button" /> );
-const RetweetButton = () => ( <i className="fa fa-retweet retweet-button" />
-);
-const LikeButton = () => ( <i className="fa fa-heart like-button" /> );
-const MoreOptionsButton = () => ( <i className="fa fa-ellipsis-h more-options-button" /> );
+function Time({ time }) {
+    return (
+    <span className="time">{moment(time).fromNow()}</span>
+    );
+}
 
-ReactDOM.render(<Tweet />, document.querySelector('#root'));
+function ReplyButton() {
+    return ( <i className="fa fa-reply reply-button" /> );
+}
+
+function RetweetButton({ count }) {
+    return (
+        <span className="like-button">
+            <i className="fa fa-retweet">{count > 0 && <span className="retweet-count">{count}</span>}</i>
+        </span>
+    );
+}
+
+function LikeButton({ count }) {
+    return (
+        <span className="like-button">
+            <i className="fa fa-heart">{count > 0 && <span className="like-count">{count}</span>}</i>
+        </span>
+    );
+}
+
+function MoreOptionsButton() {
+    return ( <i className="fa fa-ellipsis-h more-options-button" /> );
+}
+
+const testTweet = {
+    message: 'Hello from tweet',
+    gravatar: 'xyz',
+    author: {
+        handle: 'yunnix',
+        name: 'Yunus Bahtiar'
+    },
+    likes: 2,
+    retweets: 30,
+    timestamps: '2020-07-30 21:24:37'
+};
+
+ReactDOM.render(<Tweet tweet={testTweet} />, document.querySelector('#root'));
